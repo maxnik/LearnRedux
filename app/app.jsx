@@ -4,9 +4,9 @@ import Main from 'Main';
 
 require('./styles/main.scss');
 
-ReactDOM.render(
-  <p>Learn Redux</p>,
-  document.getElementById('app')
-);
+// ReactDOM.render(
+//   <p>Learn Redux</p>,
+//   document.getElementById('app')
+// );
 
 require('./redux-example.jsx');

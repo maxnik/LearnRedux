@@ -1,4 +1,5 @@
 import {createStore, compose, combineReducers} from 'redux';
+import axios from 'axios';
 
 const oldReducer = (state = stateDefault, action) => {
 	switch (action.type) {
@@ -77,10 +78,51 @@ const removeTodo = (id) => {
 	}
 }
 
+const mapReducer = (state = {isFetching: false, url: undefined}, action) => {
+	switch (action.type) {
+		case 'START_LOCATION_FETCH':
+			return {
+				isFetching: true,
+				url: undefined
+			};
+		case 'COMPLETE_LOCATION_FETCH':
+			return {
+				isFetching: false,
+				url: action.url
+			};
+		default:
+			return state;
+	}
+}
+
+const startLocationFetch = () => {
+	return {
+		type: 'START_LOCATION_FETCH'
+	};
+};
+
+const completeLocationFetch = (url) => {
+	return {
+		type: 'COMPLETE_LOCATION_FETCH',
+		url
+	};
+};
+
+const fetchLocation = () => {
+	store.dispatch(startLocationFetch());
+
+	axios.get('http://ipinfo.io').then((res) => {
+		const loc = res.data.loc;
+		const baseUrl = 'http://maps.google.com?q=';
+
+		store.dispatch(completeLocationFetch(baseUrl + loc));
+	});
+};
 
 const reducer = combineReducers({
 	searchText: searchTextReducer,
-	todos: todosReducer
+	todos: todosReducer,
+	map: mapReducer
 });
 const store = createStore(reducer, compose(
 	window.devToolsExtension ? window.devToolsExtension() : f => f
@@ -90,7 +132,15 @@ const unsubscribe = store.subscribe(() => {
 	const state = store.getState();
 
 	console.log('currentState is ', state);
+
+	if (state.map.isFetching) {
+		document.getElementById('app').innerHTML = 'Loading...';
+	} else if (state.map.url) {
+		document.getElementById('app').innerHTML = `<a href="${state.map.url}" target="_blank">View your location</a>`;
+	}
 });
+
+fetchLocation();
 
 store.dispatch(changeSeachText('new search text'));
 
