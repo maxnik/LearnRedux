@@ -1,13 +1,5 @@
 import {createStore, compose, combineReducers} from 'redux';
 
-console.log('Starting Redux example');
-
-const stateDefault = {
-	searchText: '', 
-	showCompleted: false, 
-	todos: []
-};
-let nextTodoId = 1;
 const oldReducer = (state = stateDefault, action) => {
 	switch (action.type) {
 		case 'CHANGE_SEARCH_TEXT':
@@ -46,6 +38,14 @@ const searchTextReducer = (state = '', action) => {
 	};
 };
 
+const changeSeachText = (searchText) => {
+	return {
+		type: 'CHANGE_SEARCH_TEXT',
+		searchText
+	}
+};
+
+let nextTodoId = 1;
 const todosReducer = (state = [], action) => {
 	switch (action.type) {
 		case 'ADD_TODO':
@@ -63,6 +63,21 @@ const todosReducer = (state = [], action) => {
 	};
 };
 
+const addTodo = (todoText) => {
+	return {
+		type: 'ADD_TODO',
+		todoText
+	}
+};
+
+const removeTodo = (id) => {
+	return {
+		type: 'REMOVE_TODO',
+		id
+	}
+}
+
+
 const reducer = combineReducers({
 	searchText: searchTextReducer,
 	todos: todosReducer
@@ -77,27 +92,12 @@ const unsubscribe = store.subscribe(() => {
 	console.log('currentState is ', state);
 });
 
-store.dispatch({
-	type: 'CHANGE_SEARCH_TEXT',
-	searchText: 'new search text'
-});
+store.dispatch(changeSeachText('new search text'));
 
-store.dispatch({
-	type: 'CHANGE_SEARCH_TEXT',
-	searchText: 'work'
-});
+store.dispatch(changeSeachText('work'));
 
-store.dispatch({
-	type: 'ADD_TODO',
-	todoText: 'Go for a run'
-});
+store.dispatch(addTodo('Go for a run'));
 
-store.dispatch({
-	type: 'ADD_TODO',
-	todoText: 'Do homework'
-});
+store.dispatch(addTodo('Do homework'));
 
-store.dispatch({
-	type: 'REMOVE_TODO',
-	id: 2
-});
+store.dispatch(removeTodo(2));
