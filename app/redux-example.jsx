@@ -8,9 +8,23 @@ const stateDefault = {
 	todos: []
 };
 const reducer = (state = stateDefault, action) => {
-	return state;
+	switch (action.type) {
+		case 'CHANGE_SEARCH_TEXT':
+			return {
+				...state,
+				searchText: action.searchText
+			};
+		default: 
+			return state;
+	}
 };
 const store = createStore(reducer);
 
-const currentState = store.getState();
-console.log('currentState', currentState);
+console.log('currentState', store.getState());
+
+store.dispatch({
+	type: 'CHANGE_SEARCH_TEXT',
+	searchText: 'new search text'
+});
+
+console.log('searchText should change', store.getState());
