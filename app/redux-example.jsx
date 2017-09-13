@@ -1,4 +1,4 @@
-import {createStore, compose} from 'redux';
+import {createStore, compose, combineReducers} from 'redux';
 
 console.log('Starting Redux example');
 
@@ -8,7 +8,7 @@ const stateDefault = {
 	todos: []
 };
 let nextTodoId = 1;
-const reducer = (state = stateDefault, action) => {
+const oldReducer = (state = stateDefault, action) => {
 	switch (action.type) {
 		case 'CHANGE_SEARCH_TEXT':
 			return {
@@ -35,6 +35,38 @@ const reducer = (state = stateDefault, action) => {
 			return state;
 	}
 };
+
+
+const searchTextReducer = (state = '', action) => {
+	switch (action.type) {
+		case 'CHANGE_SEARCH_TEXT':
+			return action.searchText;
+		default: 
+			return state;
+	};
+};
+
+const todosReducer = (state = [], action) => {
+	switch (action.type) {
+		case 'ADD_TODO':
+			return [
+				...state,
+				{
+					id: nextTodoId++,
+					text: action.todoText
+				}
+			];
+		case 'REMOVE_TODO':
+			return state.filter(todo => todo.id !== action.id);
+		default:
+			return state;
+	};
+};
+
+const reducer = combineReducers({
+	searchText: searchTextReducer,
+	todos: todosReducer
+});
 const store = createStore(reducer, compose(
 	window.devToolsExtension ? window.devToolsExtension() : f => f
 ));
