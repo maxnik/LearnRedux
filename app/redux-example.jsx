@@ -1,4 +1,4 @@
-import {createStore} from 'redux';
+import {createStore, compose} from 'redux';
 
 console.log('Starting Redux example');
 
@@ -7,6 +7,7 @@ const stateDefault = {
 	showCompleted: false, 
 	todos: []
 };
+let nextTodoId = 1;
 const reducer = (state = stateDefault, action) => {
 	switch (action.type) {
 		case 'CHANGE_SEARCH_TEXT':
@@ -14,19 +15,35 @@ const reducer = (state = stateDefault, action) => {
 				...state,
 				searchText: action.searchText
 			};
+		case 'ADD_TODO':
+			return {
+				...state,
+				todos: [
+					...state.todos,
+					{
+						id: nextTodoId++,
+						text: action.todoText
+					}
+				]
+			};
+		case 'REMOVE_TODO':
+			return {
+				...state,
+				todos: state.todos.filter(todo => todo.id !== action.id)
+			}
 		default: 
 			return state;
 	}
 };
-const store = createStore(reducer);
+const store = createStore(reducer, compose(
+	window.devToolsExtension ? window.devToolsExtension() : f => f
+));
 
 const unsubscribe = store.subscribe(() => {
 	const state = store.getState();
 
-	console.log('searchText is ', state.searchText);
+	console.log('currentState is ', state);
 });
-
-console.log('currentState', store.getState());
 
 store.dispatch({
 	type: 'CHANGE_SEARCH_TEXT',
@@ -36,4 +53,19 @@ store.dispatch({
 store.dispatch({
 	type: 'CHANGE_SEARCH_TEXT',
 	searchText: 'work'
+});
+
+store.dispatch({
+	type: 'ADD_TODO',
+	todoText: 'Go for a run'
+});
+
+store.dispatch({
+	type: 'ADD_TODO',
+	todoText: 'Do homework'
+});
+
+store.dispatch({
+	type: 'REMOVE_TODO',
+	id: 2
 });
