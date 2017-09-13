@@ -20,6 +20,12 @@ const reducer = (state = stateDefault, action) => {
 };
 const store = createStore(reducer);
 
+const unsubscribe = store.subscribe(() => {
+	const state = store.getState();
+
+	console.log('searchText is ', state.searchText);
+});
+
 console.log('currentState', store.getState());
 
 store.dispatch({
@@ -27,4 +33,7 @@ store.dispatch({
 	searchText: 'new search text'
 });
 
-console.log('searchText should change', store.getState());
+store.dispatch({
+	type: 'CHANGE_SEARCH_TEXT',
+	searchText: 'work'
+});
